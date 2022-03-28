@@ -82,6 +82,22 @@ macro_rules! divide_units {
                 $quotient_unit(self.0 / rhs.0)
             }
         }
+
+        impl core::ops::Mul<$denominator_unit> for $quotient_unit {
+            type Output = $numerator_unit;
+
+            fn mul(self, rhs: $denominator_unit) -> Self::Output {
+                $numerator_unit(self.0 * rhs.0)
+            }
+        }
+
+        impl core::ops::Mul<$quotient_unit> for $denominator_unit {
+            type Output = $numerator_unit;
+
+            fn mul(self, rhs: $quotient_unit) -> Self::Output {
+                $numerator_unit(self.0 * rhs.0)
+            }
+        }
     };
 }
 
@@ -101,6 +117,22 @@ macro_rules! multiply_units {
 
             fn mul(self, rhs: $unit_1) -> Self::Output {
                 $product_unit(self.0 * rhs.0)
+            }
+        }
+
+        impl core::ops::Div<$unit_1> for $product_unit {
+            type Output = $unit_2;
+
+            fn div(self, rhs: $unit_1) -> Self::Output {
+                $unit_2(self.0 / rhs.0)
+            }
+        }
+
+        impl core::ops::Div<$unit_2> for $product_unit {
+            type Output = $unit_1;
+
+            fn div(self, rhs: $unit_2) -> Self::Output {
+                $unit_1(self.0 / rhs.0)
             }
         }
     };
@@ -123,8 +155,6 @@ mod tests {
     unit!(Amp, "A");
     unit!(Ohm, "Ω");
 
-    divide_units!(Volt, Amp, Ohm);
-    divide_units!(Volt, Ohm, Amp);
     multiply_units!(Amp, Ohm, Volt);
 
     unit!(Degree, "°");

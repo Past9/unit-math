@@ -33,12 +33,16 @@ unit!(Amp, "A");
 unit!(Ohm, "Ω");
 ```
 
-Then define the equations above:
+Then define any one of the equations above:
 ```rust
 multiply_units!(Amp, Ohm, Volt); // Amps * Ohms = Volts
+// OR
 divide_units!(Volt, Amp, Ohm);   // Volts / Amps = Ohms
+// OR
 divide_units!(Volt, Ohm, Amp);   // Volts / Ohms = Amps
 ```
+
+You must choose only one equation to describe the relationship between the units. Macros will generate all the others. If you define more than one, you will get compiler errors due to conflicting implementations.
 
 The compiler will now allow arithmetic on these quantities while keeping track of the units for you:
 ```rust
