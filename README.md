@@ -64,7 +64,8 @@ convert_units!(Millimeter, Meter, 0.001);
 let meters = Meter(2.0);
 let millimeters: Millimeter = meters.into();
 
-assert_eq!(Millimeter(2000.0), millimeters); // Assertion passes
+assert_eq!(Millimeter(2000.0), millimeters); 
+assert_eq!(Meter(2.0), millimeters.into());
 ```
 
 ## Limitations
