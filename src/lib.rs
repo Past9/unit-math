@@ -1,12 +1,31 @@
 #![no_std]
+
 #[cfg(feature = "std")]
 extern crate std;
+
+#[cfg(feature = "defmt")]
+#[macro_export]
+macro_rules! unit_defmt {
+    ($unit:ident, $symbol:expr) => {
+        impl defmt::Format for $unit {
+            fn format(&self, fmt: defmt::Formatter) {
+                defmt::write!(fmt, "{}{}", self.0, $symbol)
+            }
+        }
+    };
+}
+
+#[cfg(not(feature = "defmt"))]
+#[macro_export]
+macro_rules! unit_defmt {
+    ($unit:ident, $symbol:expr) => {};
+}
 
 #[macro_export]
 macro_rules! unit {
     ($unit:ident, $symbol:expr) => {
         #[derive(Debug, Copy, Clone, PartialEq, PartialOrd)]
-        struct $unit(f32);
+        pub struct $unit(pub f32);
 
         impl core::ops::Div<f32> for $unit {
             type Output = $unit;
@@ -67,12 +86,7 @@ macro_rules! unit {
             }
         }
 
-        #[cfg(feature = "defmt")]
-        impl defmt::Format for $unit {
-            fn format(&self, fmt: defmt::Formatter) {
-                defmt::write!(fmt, "{}{}", self.0, $symbol)
-            }
-        }
+        unit_defmt!($unit, $symbol);
     };
 }
 
