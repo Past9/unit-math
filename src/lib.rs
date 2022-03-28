@@ -1,3 +1,7 @@
+#![no_std]
+#[cfg(feature = "std")]
+extern crate std;
+
 #[macro_export]
 macro_rules! unit {
     ($unit:ident, $symbol:expr) => {
@@ -56,17 +60,17 @@ macro_rules! unit {
             }
         }
 
-        #[cfg(not(no_std))]
+        #[cfg(feature = "std")]
         impl std::fmt::Display for $unit {
             fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
                 write!(f, "{}{}", self.0, $symbol)
             }
         }
 
-        #[cfg(defmt)]
-        impl defmt::traits::Format for $unit {
-            fn fmt(&self, f: &mut defmt::Formatter<'_>) -> std::fmt::Result {
-                write!(f, "{}{}", self.0, $symbol)
+        #[cfg(feature = "defmt")]
+        impl defmt::Format for $unit {
+            fn format(&self, fmt: defmt::Formatter) {
+                defmt::write!(fmt, "{}{}", self.0, $symbol)
             }
         }
     };
@@ -151,6 +155,7 @@ macro_rules! convert_units {
 
 #[cfg(test)]
 mod tests {
+
     unit!(Volt, "V");
     unit!(Amp, "A");
     unit!(Ohm, "Ω");
@@ -166,12 +171,13 @@ mod tests {
     convert_units!(Radian, Degree, 180.0 / PI);
 
     #[test]
+    #[cfg(feature = "std")]
     fn display() {
-        assert_eq!("1.5V", format!("{}", Volt(1.5)));
-        assert_eq!("1.5A", format!("{}", Amp(1.5)));
-        assert_eq!("1.5Ω", format!("{}", Ohm(1.5)));
-        assert_eq!("120°", format!("{}", Degree(120.0)));
-        assert_eq!("1.5rad", format!("{}", Radian(1.5)));
+        assert_eq!("1.5V", std::format!("{}", Volt(1.5)));
+        assert_eq!("1.5A", std::format!("{}", Amp(1.5)));
+        assert_eq!("1.5Ω", std::format!("{}", Ohm(1.5)));
+        assert_eq!("120°", std::format!("{}", Degree(120.0)));
+        assert_eq!("1.5rad", std::format!("{}", Radian(1.5)));
     }
 
     #[test]
